@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmpDAO {
 	Connection conn = null;
@@ -31,6 +33,115 @@ public class EmpDAO {
 			e.printStackTrace();
 		}
 	}// end of 생성자
+	
+	public void insertSchedule(Schedule sch) {
+		String sql = "insert into calender values (?,?,?,?)";
+		try {
+			PreparedStatement psmt = conn.prepareStatement(sql);
+			psmt.setString(1, sch.getTitle());
+			psmt.setString(2, sch.getStartDay());
+			psmt.setString(3, sch.getEndDay());
+			psmt.setString(4, sch.getUrl());
+			int r = psmt.executeUpdate();
+			System.out.println(r+ "건 입력되었습니다.");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public List<Schedule> getScheduleList() {
+		String sql = "select * from calender";
+		List<Schedule> list = new ArrayList<>();
+		try {
+			PreparedStatement psmt = conn.prepareStatement(sql);
+			ResultSet rs = psmt.executeQuery();
+			while (rs.next()) {
+				Schedule schedule = new Schedule();
+				schedule.setTitle(rs.getString("title"));
+				schedule.setStartDay(rs.getString("start_date"));
+				schedule.setEndDay(rs.getString("end_date"));
+				schedule.setUrl(rs.getString("url"));
+
+				list.add(schedule);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+
+	public List<EmployeeVO> getEmptable() {
+		String sql = "select * from emp_tempp order by 1 desc";
+		List<EmployeeVO> list = new ArrayList<>();
+
+		try {
+			PreparedStatement psmt = conn.prepareStatement(sql);
+			ResultSet rs = psmt.executeQuery();
+			while (rs.next()) {
+				EmployeeVO vo = new EmployeeVO();
+				vo.setEmployeeId(rs.getInt("employee_id"));
+				vo.setFirstName(rs.getString("first_name"));
+				vo.setLastName(rs.getString("last_name"));
+				vo.setEmail(rs.getString("email"));
+				vo.setPhoneNumber(rs.getString("phone_number"));
+				vo.setHireDate(rs.getString("hire_date"));
+				vo.setJobId(rs.getString("job_id"));
+				vo.setSalary(rs.getInt("salary"));
+
+				list.add(vo);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return list;
+	}
+
+	public Map<String, Integer> getMemberByDept() {
+		String sql = "select department_name, count(*) "//
+				+ "from employees e, departments d "//
+				+ "where e.department_id = d.department_id "//
+				+ "group by department_name";
+
+		Map<String, Integer> map = new HashMap<>();
+		try {
+			PreparedStatement psmt = conn.prepareStatement(sql);
+			ResultSet rs = psmt.executeQuery();
+			while (rs.next()) {
+				map.put(rs.getString(1), rs.getInt(2));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return map;
+	}
 
 	// insert만들어보자
 	public EmployeeVO insertEmp(EmployeeVO vo) {
@@ -108,7 +219,7 @@ public class EmpDAO {
 		int r = 0;
 		try {
 			PreparedStatement psmt = conn.prepareStatement(sql);
-			
+
 			psmt.setString(1, vo.getFirstName());
 			psmt.setString(2, vo.getLastName());
 			psmt.setString(3, vo.getEmail());
@@ -118,8 +229,6 @@ public class EmpDAO {
 
 			r = psmt.executeUpdate();
 			System.out.println(r + "건이 수정됨");
-			
-			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
