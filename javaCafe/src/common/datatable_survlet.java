@@ -23,13 +23,12 @@ public class datatable_survlet extends HttpServlet {
 			throws ServletException, IOException {
 		EmpDAO dao = new EmpDAO();
 		List<EmployeeVO> list = dao.getEmptable();
-		PrintWriter out = response.getWriter();
 
 		String json = "[";
 		int cnt = 1;
 		for (EmployeeVO emp : list) {
 			json += "{";
-			json += "\"id\":\"" + emp.getEmployeeId() + "\"";
+			json += "\"employeeId\":\"" + emp.getEmployeeId() + "\"";
 			json += "\"firstName\":\"" + emp.getFirstName() + "\"";
 			json += "\"lastName\":\"" + emp.getLastName() + "\"";
 			json += "\"email\":\"" + emp.getEmail() + "\"";
@@ -44,7 +43,7 @@ public class datatable_survlet extends HttpServlet {
 		}
 		json += "]";
 
-		out.print(json);
+		response.getWriter().append(json);
 
 	}
 

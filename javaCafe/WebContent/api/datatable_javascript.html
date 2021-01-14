@@ -13,36 +13,46 @@
 	$.ajax({
 		url : '../datatable',
 		dataType : 'json',
-		success : function(result) {
-			console.log("oooo");
-		},
+		success : chartCallBackFunc,
 		error : function(reject) {
-			console.log("xxxx");
+			console.log(reject);
 		}
 	});
 
-	$(document).ready(function() {
-		$('#example').DataTable({
-			data : result,
-			columns : [ {
-				title : "Employee ID"
-			}, {
-				title : "First Name"
-			}, {
-				title : "Last Name"
-			}, {
-				title : "Email"
-			}, {
-				title : "Phone Number"
-			}, {
-				title : "Hire Date"
-			}, {
-				title : "Job Id"
-			}, {
-				title : "Salary"
-			} ]
+	function chartCallBackFunc(result) {
+		console.log(result);
+		let data = result;
+		var dataSet = [];
+		for(val of data){
+			let inAry = [];
+			for(field in val) {
+				console.log(field, val[field]);
+				inAry.push(val[field]);
+			}
+			dataSet.push(inAry);
+		}
+
+		$(document).ready(function() {
+			$('#example').DataTable({
+				data : result,
+				columns : [ {
+					title : "firstName"
+				}, {
+					title : "lastName"
+				}, {
+					title : "email"
+				}, {
+					title : "phoneNumber"
+				}, {
+					title : "hireDate"
+				}, {
+					title : "jobId"
+				}, {
+					title : "salary"
+				} ]
+			});
 		});
-	});
+	};
 </script>
 </head>
 <body>
